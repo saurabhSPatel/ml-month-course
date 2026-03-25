@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML in a Month</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090f;--surface:#111118;--card:#15151e;--border:#1d1d2b;--a1:#7c6af7;--a2:#f7926a;--a3:#5ef0b0;--a4:#f7d46a;--text:#e2e2ef;--muted:#5a5a78;--dim:#252535}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 8% 20%,rgba(124,106,247,.08) 0%,transparent 70%),radial-gradient(ellipse 50% 50% at 92% 80%,rgba(94,240,176,.06) 0%,transparent 70%);pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:0 18px 80px}
+header{padding:52px 0 40px;border-bottom:1px solid var(--border);margin-bottom:40px}
+.tag{display:inline-block;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--a1);background:rgba(124,106,247,.1);border:1px solid rgba(124,106,247,.22);padding:4px 12px;border-radius:100px;margin-bottom:18px}
+h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,6vw,3.4rem);font-weight:800;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}
+h1 span{background:linear-gradient(100deg,var(--a1),var(--a3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{color:var(--muted);font-size:12px;line-height:1.7;max-width:500px;margin-bottom:28px}
+.stats{display:flex;gap:16px;flex-wrap:wrap}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 18px}
+.sn{font-family:'Syne',sans-serif;font-size:20px;font-weight:700}
+.sl{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+.prog-row{display:flex;align-items:center;gap:14px;margin-bottom:32px;padding:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:12px}
+.prog-lbl{font-size:10px;color:var(--muted);white-space:nowrap}
+.prog-bg{flex:1;height:4px;background:var(--border);border-radius:100px;overflow:hidden}
+.prog-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--a1),var(--a3));transition:width .5s ease}
+.prog-pct{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--a3);white-space:nowrap}
+.wnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;position:sticky;top:14px;z-index:99}
+.wbtn{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;padding:8px 16px;border-radius:100px;border:1px solid var(--border);background:rgba(21,21,30,.9);color:var(--muted);cursor:pointer;transition:all .2s;backdrop-filter:blur(12px)}
+.wbtn:hover{border-color:var(--a1);color:var(--text)}
+.wbtn.on{background:var(--a1);border-color:var(--a1);color:#fff}
+.wsec{display:none}
+.wsec.vis{display:block}
+.whdr{display:flex;align-items:flex-start;gap:16px;margin-bottom:24px;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:14px}
+.wbadge{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:100px;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.w1 .wbadge{background:rgba(124,106,247,.15);color:var(--a1);border:1px solid rgba(124,106,247,.28)}
+.w2 .wbadge{background:rgba(247,146,106,.15);color:var(--a2);border:1px solid rgba(247,146,106,.28)}
+.w3 .wbadge{background:rgba(94,240,176,.12);color:var(--a3);border:1px solid rgba(94,240,176,.25)}
+.w4 .wbadge{background:rgba(247,212,106,.15);color:var(--a4);border:1px solid rgba(247,212,106,.28)}
+.wtitle{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:5px}
+.wdesc{font-size:11px;color:var(--muted);line-height:1.6}
+.dc{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;transition:border-color .2s}
+.dc:hover{border-color:var(--dim)}
+.dh{display:flex;align-items:center;gap:12px;padding:16px 18px;cursor:pointer;user-select:none}
+.dnum{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--muted);min-width:44px}
+.dtitle{flex:1;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;line-height:1.3}
+.chips{display:flex;gap:5px;flex-shrink:0}
+.chip{font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:100px;border:1px solid}
+.cvis{color:var(--a3);border-color:rgba(94,240,176,.25);background:rgba(94,240,176,.07)}
+.ccod{color:var(--a2);border-color:rgba(247,146,106,.25);background:rgba(247,146,106,.07)}
+.cthy{color:var(--a1);border-color:rgba(124,106,247,.25);background:rgba(124,106,247,.07)}
+.cllm{color:var(--a4);border-color:rgba(247,212,106,.25);background:rgba(247,212,106,.07)}
+.chev{width:16px;height:16px;color:var(--muted);transition:transform .28s;flex-shrink:0}
+.dc.open .chev{transform:rotate(180deg)}
+.dc.done .dnum{color:var(--a3)}
+.db{display:none;border-top:1px solid var(--border);padding:0 18px 20px}
+.dc.open .db{display:block}
+.slbl{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px;display:flex;align-items:center;gap:8px}
+.slbl::after{content:'';flex:1;height:1px;background:var(--border)}
+.vlink{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--surface);border:1px solid var(--border);border-radius:9px;text-decoration:none;color:var(--text);font-size:11px;transition:all .2s;margin-bottom:7px}
+.vlink:hover{border-color:var(--a1);background:rgba(124,106,247,.06)}
+.vico{flex-shrink:0;color:var(--muted)}
+.vlink:hover .vico{color:var(--a1)}
+.vi{flex:1}
+.vt{font-size:11px;margin-bottom:2px}
+.vs{font-size:10px;color:var(--muted)}
+.vd{font-size:9px;color:var(--muted);background:var(--card);padding:2px 8px;border-radius:100px;white-space:nowrap;border:1px solid var(--border)}
+.notes{font-family:'Instrument Serif',serif;font-size:14px;line-height:1.78;color:#bbbbd0}
+.notes strong{color:var(--text);font-family:'DM Mono',monospace;font-size:11px}
+.kps{list-style:none;margin-top:10px}
+.kps li{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px;line-height:1.5;color:#b0b0c8}
+.kps li:last-child{border-bottom:none}
+.kps li::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--a1);flex-shrink:0;margin-top:5px}
+.w2 .kps li::before{background:var(--a2)}
+.w3 .kps li::before{background:var(--a3)}
+.w4 .kps li::before{background:var(--a4)}
+.quiz-box{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:16px;margin-top:4px}
+.quiz-intro{font-size:10px;color:var(--muted);margin-bottom:14px;letter-spacing:.04em}
+.qz-item{margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.qz-item:last-of-type{border-bottom:none;margin-bottom:10px}
+.q-text{font-size:12px;font-weight:500;margin-bottom:10px;line-height:1.5;color:var(--text)}
+.q-opt{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;border:1px solid transparent;font-size:11px;cursor:pointer;transition:all .18s;margin-bottom:4px;color:#a0a0bb}
+.q-opt:hover{border-color:var(--dim);background:rgba(255,255,255,.03)}
+.q-opt input{accent-color:var(--a1)}
+.q-opt.correct-ans{background:rgba(94,240,176,.1);border-color:rgba(94,240,176,.3);color:var(--a3)}
+.q-opt.wrong-sel{background:rgba(247,100,100,.1);border-color:rgba(247,100,100,.3);color:#f77;text-decoration:line-through}
+.quiz-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.check-btn{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;padding:8px 16px;border-radius:100px;background:var(--a1);border:none;color:#fff;cursor:pointer;transition:opacity .2s}
+.check-btn:hover{opacity:.85}
+.reset-btn{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;padding:8px 14px;border-radius:100px;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s}
+.reset-btn:hover{border-color:var(--muted);color:var(--text)}
+.qresult{display:none;margin-top:12px;padding:10px 14px;border-radius:8px;font-size:11px;font-weight:600;letter-spacing:.04em}
+.qresult.perfect{background:rgba(94,240,176,.12);color:var(--a3);border:1px solid rgba(94,240,176,.3)}
+.qresult.good{background:rgba(124,106,247,.12);color:var(--a1);border:1px solid rgba(124,106,247,.3)}
+.qresult.retry{background:rgba(247,100,100,.1);color:#f88;border:1px solid rgba(247,100,100,.25)}
+.qscore-bar{height:3px;border-radius:100px;background:var(--border);margin-top:8px;overflow:hidden}
+.qscore-fill{height:100%;border-radius:100px;transition:width .4s ease}
+.done-btn{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;padding:7px 16px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;margin-top:16px}
+.done-btn:hover{border-color:var(--a3);color:var(--a3)}
+.done-btn.marked{background:rgba(94,240,176,.1);border-color:var(--a3);color:var(--a3)}
+footer{margin-top:60px;padding-top:28px;border-top:1px solid var(--border);text-align:center;font-size:10px;color:var(--muted);line-height:1.8}
+@media(max-width:600px){.chips{display:none}.stats{gap:10px}.stat{padding:10px 14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="tag">Visual · Intuition-first · End-to-End</div>
+  <h1>ML in a <span>Month</span></h1>
+  <p class="sub">From linear regression to LLMs — curated for visual learners. StatQuest + 3Blue1Brown + Karpathy.</p>
+  <div class="stats">
+    <div class="stat"><div class="sn" style="color:var(--a1)">28</div><div class="sl">Days</div></div>
+    <div class="stat"><div class="sn" style="color:var(--a2)">4</div><div class="sl">Weeks</div></div>
+    <div class="stat"><div class="sn" style="color:var(--a3)">56+</div><div class="sl">Videos</div></div>
+    <div class="stat"><div class="sn" style="color:var(--a4)">84</div><div class="sl">Quiz Qs</div></div>
+  </div>
+</header>
+
+<div class="prog-row">
+  <span class="prog-lbl">Progress</span>
+  <div class="prog-bg"><div class="prog-fill" id="gbar" style="width:0%"></div></div>
+  <span class="prog-pct" id="gpct">0 / 28</span>
+</div>
+
+<div class="wnav">
+  <button class="wbtn on" onclick="showWeek(1,this)">Week 1 · Foundations</button>
+  <button class="wbtn" onclick="showWeek(2,this)">Week 2 · Deep Learning</button>
+  <button class="wbtn" onclick="showWeek(3,this)">Week 3 · Transformers</button>
+  <button class="wbtn" onclick="showWeek(4,this)">Week 4 · LLMs</button>
+</div>
+
+<!-- WEEK 1 -->
+<section class="wsec w1 vis" id="ws1">
+  <div class="whdr">
+    <span class="wbadge">Week 1</span>
+    <div><div class="wtitle">ML Foundations &amp; Core Algorithms</div><div class="wdesc">Master the essential ML algorithms visually. StatQuest-powered — no heavy math, all intuition.</div></div>
+  </div>
+
+  <!-- DAY 1 -->
+  <div class="dc" id="d1">
+    <div class="dh" onclick="tog('d1')">
+      <span class="dnum">Day 01</span>
+      <span class="dtitle">What is ML? Bias-Variance &amp; the ML Workflow</span>
+      <div class="chips"><span class="chip cvis">visual</span><span class="chip cthy">concept</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=Gv9_4yMHFhI" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">A Gentle Introduction to Machine Learning</div><div class="vs">StatQuest with Josh Starmer</div></div>
+        <span class="vd">18 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=EuBBz3bI-aA" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Machine Learning Fundamentals: Bias and Variance</div><div class="vs">StatQuest</div></div>
+        <span class="vd">20 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">ML is the science of learning patterns from data instead of hard-coding rules. The <strong>bias-variance tradeoff</strong> is the most important concept in all of ML — high bias underfits (too simple), high variance overfits (memorises noise). Every model selection decision you make is managing this tradeoff.</p>
+      <ul class="kps">
+        <li>Supervised = labelled data; Unsupervised = find structure without labels; RL = learn from rewards</li>
+        <li>ML workflow: collect data, clean, split train/val/test, train, evaluate, iterate</li>
+        <li>Never touch the test set until final evaluation — it is your unbiased reality check</li>
+        <li>Model complexity vs error: training error always falls, but validation error has a sweet-spot minimum</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d1">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q1. A model too simple to capture the underlying pattern is said to have:</p>
+          <label class="q-opt"><input type="radio" name="d1q1" value="0"> High variance</label>
+          <label class="q-opt"><input type="radio" name="d1q1" value="1"> High bias</label>
+          <label class="q-opt"><input type="radio" name="d1q1" value="2"> High accuracy</label>
+          <label class="q-opt"><input type="radio" name="d1q1" value="3"> Low loss</label>
+        </div>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q2. Which dataset split should you NEVER look at until you have a final model?</p>
+          <label class="q-opt"><input type="radio" name="d1q2" value="0"> Training set</label>
+          <label class="q-opt"><input type="radio" name="d1q2" value="1"> Validation set</label>
+          <label class="q-opt"><input type="radio" name="d1q2" value="2"> Test set</label>
+          <label class="q-opt"><input type="radio" name="d1q2" value="3"> Dev set</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q3. In supervised learning, training examples must include:</p>
+          <label class="q-opt"><input type="radio" name="d1q3" value="0"> Both inputs and corresponding labels</label>
+          <label class="q-opt"><input type="radio" name="d1q3" value="1"> Only input features</label>
+          <label class="q-opt"><input type="radio" name="d1q3" value="2"> Only output labels</label>
+          <label class="q-opt"><input type="radio" name="d1q3" value="3"> Reward signals</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d1')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d1')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d1"></div>
+      </div>
+      <button class="done-btn" id="db-d1" onclick="markDone('d1')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 2 -->
+  <div class="dc" id="d2">
+    <div class="dh" onclick="tog('d2')">
+      <span class="dnum">Day 02</span>
+      <span class="dtitle">Linear Regression &amp; Gradient Descent</span>
+      <div class="chips"><span class="chip cvis">visual</span><span class="chip cthy">concept</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=nk2XFKpl_wE" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Linear Regression, Clearly Explained</div><div class="vs">StatQuest</div></div>
+        <span class="vd">27 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=sDv4f4s2SB8" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Gradient Descent, Step by Step</div><div class="vs">StatQuest</div></div>
+        <span class="vd">20 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">Linear regression fits a line through data by minimising the <strong>sum of squared residuals</strong>. Gradient descent is the numerical engine — compute the slope of the loss, then take a small step downhill. Almost every ML algorithm is optimised via some variant of gradient descent.</p>
+      <ul class="kps">
+        <li>Loss function MSE: average squared difference between predictions and actual values</li>
+        <li>Update rule: weight = weight minus learning_rate times gradient of loss</li>
+        <li>Learning rate too large: overshoots minimum and diverges. Too small: converges very slowly</li>
+        <li>Mini-batch GD: compromise between full-batch (stable, slow) and stochastic (noisy, fast)</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d2">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q1. MSE stands for:</p>
+          <label class="q-opt"><input type="radio" name="d2q1" value="0"> Maximum Squared Error</label>
+          <label class="q-opt"><input type="radio" name="d2q1" value="1"> Minimum Squared Estimation</label>
+          <label class="q-opt"><input type="radio" name="d2q1" value="2"> Model Score Evaluation</label>
+          <label class="q-opt"><input type="radio" name="d2q1" value="3"> Mean Squared Error</label>
+        </div>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q2. A learning rate that is too large will cause gradient descent to:</p>
+          <label class="q-opt"><input type="radio" name="d2q2" value="0"> Converge slowly but safely</label>
+          <label class="q-opt"><input type="radio" name="d2q2" value="1"> Overshoot the minimum and possibly diverge</label>
+          <label class="q-opt"><input type="radio" name="d2q2" value="2"> Find the global minimum faster</label>
+          <label class="q-opt"><input type="radio" name="d2q2" value="3"> Have no effect</label>
+        </div>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q3. Weights are updated in the direction of:</p>
+          <label class="q-opt"><input type="radio" name="d2q3" value="0"> The positive gradient</label>
+          <label class="q-opt"><input type="radio" name="d2q3" value="1"> A random direction</label>
+          <label class="q-opt"><input type="radio" name="d2q3" value="2"> The negative gradient</label>
+          <label class="q-opt"><input type="radio" name="d2q3" value="3"> The second derivative</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d2')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d2')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d2"></div>
+      </div>
+      <button class="done-btn" id="db-d2" onclick="markDone('d2')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 3 -->
+  <div class="dc" id="d3">
+    <div class="dh" onclick="tog('d3')">
+      <span class="dnum">Day 03</span>
+      <span class="dtitle">Logistic Regression &amp; Classification Metrics</span>
+      <div class="chips"><span class="chip cvis">visual</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=yIYKR4sgzI8" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Logistic Regression, Clearly Explained</div><div class="vs">StatQuest</div></div>
+        <span class="vd">19 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=4jRBRDbJemM" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">ROC and AUC, Clearly Explained</div><div class="vs">StatQuest</div></div>
+        <span class="vd">16 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">Logistic regression predicts <strong>probabilities</strong> using the sigmoid function that squashes any value into 0-1. Accuracy alone misleads on imbalanced datasets. Use precision, recall, F1 and AUC-ROC for a complete picture.</p>
+      <ul class="kps">
+        <li>Sigmoid: 1 / (1 + e^-z) — output is always a probability between 0 and 1</li>
+        <li>Decision threshold default is 0.5 but tuning it changes the precision-recall tradeoff</li>
+        <li>Precision = TP / (TP+FP) — of all predicted positives, how many were actually positive</li>
+        <li>AUC = 1.0 is perfect; AUC = 0.5 is no better than random chance</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d3">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q1. The sigmoid function outputs values in the range:</p>
+          <label class="q-opt"><input type="radio" name="d3q1" value="0"> 0 to 1</label>
+          <label class="q-opt"><input type="radio" name="d3q1" value="1"> -1 to 1</label>
+          <label class="q-opt"><input type="radio" name="d3q1" value="2"> 0 to infinity</label>
+          <label class="q-opt"><input type="radio" name="d3q1" value="3"> -infinity to infinity</label>
+        </div>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q2. An AUC score of 0.5 means the model is:</p>
+          <label class="q-opt"><input type="radio" name="d3q2" value="0"> Perfect</label>
+          <label class="q-opt"><input type="radio" name="d3q2" value="1"> 50% accurate</label>
+          <label class="q-opt"><input type="radio" name="d3q2" value="2"> No better than random guessing</label>
+          <label class="q-opt"><input type="radio" name="d3q2" value="3"> Always predicting positive</label>
+        </div>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q3. Precision is defined as TP / (TP + ?):</p>
+          <label class="q-opt"><input type="radio" name="d3q3" value="0"> TN</label>
+          <label class="q-opt"><input type="radio" name="d3q3" value="1"> FP</label>
+          <label class="q-opt"><input type="radio" name="d3q3" value="2"> FN</label>
+          <label class="q-opt"><input type="radio" name="d3q3" value="3"> TN + FN</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d3')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d3')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d3"></div>
+      </div>
+      <button class="done-btn" id="db-d3" onclick="markDone('d3')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 4 -->
+  <div class="dc" id="d4">
+    <div class="dh" onclick="tog('d4')">
+      <span class="dnum">Day 04</span>
+      <span class="dtitle">Decision Trees &amp; Cross-Validation</span>
+      <div class="chips"><span class="chip cvis">visual</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=_L39rN6gz7Y" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Decision and Classification Trees, Clearly Explained</div><div class="vs">StatQuest</div></div>
+        <span class="vd">22 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=fSytzGwwBVw" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Machine Learning Fundamentals: Cross Validation</div><div class="vs">StatQuest</div></div>
+        <span class="vd">8 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">Decision trees split data to maximise <strong>information gain</strong>, reducing Gini impurity at each node. They are highly interpretable but overfit easily. Cross-validation gives a much more reliable generalisation estimate than a single train/val split.</p>
+      <ul class="kps">
+        <li>Gini impurity = 1 minus sum of p_i squared — 0 means perfectly pure node</li>
+        <li>Information gain = parent impurity minus weighted average of children impurity</li>
+        <li>Limit depth: max_depth and min_samples_leaf are your main anti-overfitting controls</li>
+        <li>K-Fold CV: train on k-1 folds, test on 1, rotate k times and average the score</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d4">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q1. A Gini impurity of 0 means the node is:</p>
+          <label class="q-opt"><input type="radio" name="d4q1" value="0"> Fully mixed</label>
+          <label class="q-opt"><input type="radio" name="d4q1" value="1"> Randomly split</label>
+          <label class="q-opt"><input type="radio" name="d4q1" value="2"> At maximum depth</label>
+          <label class="q-opt"><input type="radio" name="d4q1" value="3"> Perfectly pure (all one class)</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q2. A deep unpruned decision tree will tend to:</p>
+          <label class="q-opt"><input type="radio" name="d4q2" value="0"> Overfit training data</label>
+          <label class="q-opt"><input type="radio" name="d4q2" value="1"> Underfit training data</label>
+          <label class="q-opt"><input type="radio" name="d4q2" value="2"> Generalise perfectly</label>
+          <label class="q-opt"><input type="radio" name="d4q2" value="3"> Have high bias</label>
+        </div>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q3. The main purpose of k-fold cross-validation is to:</p>
+          <label class="q-opt"><input type="radio" name="d4q3" value="0"> Make training faster</label>
+          <label class="q-opt"><input type="radio" name="d4q3" value="1"> Increase training set size</label>
+          <label class="q-opt"><input type="radio" name="d4q3" value="2"> Get a more reliable estimate of model generalisation</label>
+          <label class="q-opt"><input type="radio" name="d4q3" value="3"> Reduce the number of features</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d4')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d4')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d4"></div>
+      </div>
+      <button class="done-btn" id="db-d4" onclick="markDone('d4')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 5 -->
+  <div class="dc" id="d5">
+    <div class="dh" onclick="tog('d5')">
+      <span class="dnum">Day 05</span>
+      <span class="dtitle">Random Forests &amp; Gradient Boosting (XGBoost)</span>
+      <div class="chips"><span class="chip cvis">visual</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=J4Wdy0Wc_xQ" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Random Forests, Clearly Explained</div><div class="vs">StatQuest</div></div>
+        <span class="vd">30 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=OtD8wVaFm6E" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">XGBoost Part 1 — Regression Main Ideas</div><div class="vs">StatQuest</div></div>
+        <span class="vd">25 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">Random Forests train many trees on <strong>bootstrapped samples</strong> with random feature subsets — averaging uncorrelated trees drops variance dramatically. XGBoost builds trees sequentially where each one corrects the previous tree's mistakes. These dominate tabular data competitions.</p>
+      <ul class="kps">
+        <li>Bootstrap = sampling with replacement — each tree sees a different subset of training data</li>
+        <li>Out-of-bag error: unused samples act as a free built-in validation set</li>
+        <li>Bagging reduces variance; Boosting reduces bias by focusing on hard examples</li>
+        <li>XGBoost dominates Kaggle for tabular data — learn it well</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d5">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q1. Random Forests reduce variance primarily through:</p>
+          <label class="q-opt"><input type="radio" name="d5q1" value="0"> Boosting weak learners sequentially</label>
+          <label class="q-opt"><input type="radio" name="d5q1" value="1"> Averaging many uncorrelated trees (bagging)</label>
+          <label class="q-opt"><input type="radio" name="d5q1" value="2"> Using a very deep single tree</label>
+          <label class="q-opt"><input type="radio" name="d5q1" value="3"> Removing outliers from training data</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q2. Out-of-Bag error is computed using:</p>
+          <label class="q-opt"><input type="radio" name="d5q2" value="0"> Samples not included in each tree's bootstrap sample</label>
+          <label class="q-opt"><input type="radio" name="d5q2" value="1"> A separate hold-out validation set</label>
+          <label class="q-opt"><input type="radio" name="d5q2" value="2"> Training error averaged across trees</label>
+          <label class="q-opt"><input type="radio" name="d5q2" value="3"> Cross-validation folds</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q3. XGBoost is an example of which ensemble technique?</p>
+          <label class="q-opt"><input type="radio" name="d5q3" value="0"> Bagging</label>
+          <label class="q-opt"><input type="radio" name="d5q3" value="1"> Stacking</label>
+          <label class="q-opt"><input type="radio" name="d5q3" value="2"> Voting</label>
+          <label class="q-opt"><input type="radio" name="d5q3" value="3"> Boosting</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d5')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d5')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d5"></div>
+      </div>
+      <button class="done-btn" id="db-d5" onclick="markDone('d5')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 6 -->
+  <div class="dc" id="d6">
+    <div class="dh" onclick="tog('d6')">
+      <span class="dnum">Day 06</span>
+      <span class="dtitle">SVMs, Regularisation (L1 &amp; L2) &amp; Naive Bayes</span>
+      <div class="chips"><span class="chip cvis">visual</span><span class="chip cthy">concept</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=efR1C6CvhmE" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Support Vector Machines — Main Ideas</div><div class="vs">StatQuest</div></div>
+        <span class="vd">20 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=Q81RR3yKn30" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Ridge (L2) Regularisation, Clearly Explained</div><div class="vs">StatQuest</div></div>
+        <span class="vd">16 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">SVMs find the <strong>maximum margin hyperplane</strong> — the widest gap between classes. The kernel trick maps data to higher dimensions for non-linear classification. L1 regularisation creates sparse solutions (feature selection); L2 shrinks all weights proportionally.</p>
+      <ul class="kps">
+        <li>Support vectors: the few data points closest to the boundary — only they determine the hyperplane</li>
+        <li>Kernel trick: achieve non-linear classification without explicit high-dimensional mapping</li>
+        <li>L2 (Ridge): shrinks all weights proportionally. L1 (Lasso): shrinks some weights to exactly zero</li>
+        <li>Naive Bayes: fast probabilistic classifier that assumes feature independence — great for text</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d6">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q1. The support vectors in SVM are:</p>
+          <label class="q-opt"><input type="radio" name="d6q1" value="0"> All training data points</label>
+          <label class="q-opt"><input type="radio" name="d6q1" value="1"> Points far from the decision boundary</label>
+          <label class="q-opt"><input type="radio" name="d6q1" value="2"> Data points closest to the decision boundary</label>
+          <label class="q-opt"><input type="radio" name="d6q1" value="3"> Incorrectly classified training points</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q2. L1 (Lasso) regularisation is special because it can:</p>
+          <label class="q-opt"><input type="radio" name="d6q2" value="0"> Only be applied to linear models</label>
+          <label class="q-opt"><input type="radio" name="d6q2" value="1"> Increase model complexity</label>
+          <label class="q-opt"><input type="radio" name="d6q2" value="2"> Shrink all weights equally</label>
+          <label class="q-opt"><input type="radio" name="d6q2" value="3"> Shrink some weights to exactly zero, doing feature selection</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q3. The kernel trick in SVMs allows:</p>
+          <label class="q-opt"><input type="radio" name="d6q3" value="0"> Non-linear classification without explicit high-dimensional mapping</label>
+          <label class="q-opt"><input type="radio" name="d6q3" value="1"> Faster training on large datasets</label>
+          <label class="q-opt"><input type="radio" name="d6q3" value="2"> Training with no hyperparameters</label>
+          <label class="q-opt"><input type="radio" name="d6q3" value="3"> Handling missing values automatically</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d6')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d6')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d6"></div>
+      </div>
+      <button class="done-btn" id="db-d6" onclick="markDone('d6')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 7 -->
+  <div class="dc" id="d7">
+    <div class="dh" onclick="tog('d7')">
+      <span class="dnum">Day 07</span>
+      <span class="dtitle">K-Means Clustering, PCA &amp; Dimensionality Reduction</span>
+      <div class="chips"><span class="chip cvis">visual</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=4b5d3muPQmA" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">K-means Clustering, Clearly Explained</div><div class="vs">StatQuest</div></div>
+        <span class="vd">12 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=FgakZw6K1QQ" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">PCA Step by Step — Main Ideas</div><div class="vs">StatQuest</div></div>
+        <span class="vd">21 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">K-Means assigns each point to the nearest centroid then recomputes centroids — repeat until stable. PCA finds directions of <strong>maximum variance</strong> and projects data into fewer dimensions while retaining structure. These are the two most important unsupervised techniques.</p>
+      <ul class="kps">
+        <li>K-Means is sensitive to initialisation — always use k-means++ for better starting centroids</li>
+        <li>Elbow method: plot inertia vs k and pick the bend point to choose the number of clusters</li>
+        <li>PCA principal components are orthogonal directions ordered by variance explained</li>
+        <li>First 2-3 components often capture 80-90% of variance — enough for visualisation</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d7">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q1. K-Means initialisation is improved by using:</p>
+          <label class="q-opt"><input type="radio" name="d7q1" value="0"> Random restarts only</label>
+          <label class="q-opt"><input type="radio" name="d7q1" value="1"> K-Means++ initialisation</label>
+          <label class="q-opt"><input type="radio" name="d7q1" value="2"> PCA pre-processing</label>
+          <label class="q-opt"><input type="radio" name="d7q1" value="3"> DBSCAN first</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q2. PCA finds directions of:</p>
+          <label class="q-opt"><input type="radio" name="d7q2" value="0"> Maximum loss</label>
+          <label class="q-opt"><input type="radio" name="d7q2" value="1"> Minimum correlation</label>
+          <label class="q-opt"><input type="radio" name="d7q2" value="2"> Minimum variance</label>
+          <label class="q-opt"><input type="radio" name="d7q2" value="3"> Maximum variance</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q3. The elbow method is used to find the optimal:</p>
+          <label class="q-opt"><input type="radio" name="d7q3" value="0"> Number of clusters k in K-Means</label>
+          <label class="q-opt"><input type="radio" name="d7q3" value="1"> Number of PCA components</label>
+          <label class="q-opt"><input type="radio" name="d7q3" value="2"> Learning rate in gradient descent</label>
+          <label class="q-opt"><input type="radio" name="d7q3" value="3"> Max depth of a decision tree</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d7')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d7')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d7"></div>
+      </div>
+      <button class="done-btn" id="db-d7" onclick="markDone('d7')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+</section>
+
+<!-- WEEK 2 -->
+<section class="wsec w2" id="ws2">
+  <div class="whdr">
+    <span class="wbadge">Week 2</span>
+    <div><div class="wtitle">Deep Learning &amp; Neural Networks</div><div class="wdesc">Build real intuition for how neural nets learn — from backprop to CNNs, using 3Blue1Brown and Karpathy from-scratch builds.</div></div>
+  </div>
+
+  <!-- DAY 8 -->
+  <div class="dc" id="d8">
+    <div class="dh" onclick="tog('d8')">
+      <span class="dnum">Day 08</span>
+      <span class="dtitle">Neural Networks: The Big Picture</span>
+      <div class="chips"><span class="chip cvis">visual</span><span class="chip cthy">concept</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=aircAruvnKk" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">But what is a Neural Network? — Chapter 1</div><div class="vs">3Blue1Brown</div></div>
+        <span class="vd">19 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=IHZwWFHWa-w" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Gradient Descent — How Neural Networks Learn, Ch 2</div><div class="vs">3Blue1Brown</div></div>
+        <span class="vd">21 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">A neural network is a massive composition of linear transformations and non-linearities. Each neuron computes a weighted sum then passes it through an <strong>activation function</strong>. The whole network is differentiable end-to-end, so gradient descent can optimise every weight simultaneously.</p>
+      <ul class="kps">
+        <li>Layers: input encodes data, hidden layers extract features, output makes predictions</li>
+        <li>ReLU (max(0,x)) is the default activation — fast, avoids vanishing gradients, works well</li>
+        <li>Universal approximation: a sufficiently wide single hidden layer can approximate any function</li>
+        <li>Depth gives compositional power — deep nets learn hierarchical representations</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d8">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q1. The ReLU activation function is defined as:</p>
+          <label class="q-opt"><input type="radio" name="d8q1" value="0"> 1 / (1 + e^-x)</label>
+          <label class="q-opt"><input type="radio" name="d8q1" value="1"> tanh(x)</label>
+          <label class="q-opt"><input type="radio" name="d8q1" value="2"> max(0, x)</label>
+          <label class="q-opt"><input type="radio" name="d8q1" value="3"> x squared</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q2. The universal approximation theorem states:</p>
+          <label class="q-opt"><input type="radio" name="d8q2" value="0"> A wide enough neural network can approximate any continuous function</label>
+          <label class="q-opt"><input type="radio" name="d8q2" value="1"> All neural networks converge to the global optimum</label>
+          <label class="q-opt"><input type="radio" name="d8q2" value="2"> Deeper is always better than wider</label>
+          <label class="q-opt"><input type="radio" name="d8q2" value="3"> Networks require at least 10 layers</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q3. Activation functions are necessary to:</p>
+          <label class="q-opt"><input type="radio" name="d8q3" value="0"> Speed up training</label>
+          <label class="q-opt"><input type="radio" name="d8q3" value="1"> Reduce parameters</label>
+          <label class="q-opt"><input type="radio" name="d8q3" value="2"> Normalise inputs</label>
+          <label class="q-opt"><input type="radio" name="d8q3" value="3"> Introduce non-linearity so the network can learn complex patterns</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d8')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d8')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d8"></div>
+      </div>
+      <button class="done-btn" id="db-d8" onclick="markDone('d8')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 9 -->
+  <div class="dc" id="d9">
+    <div class="dh" onclick="tog('d9')">
+      <span class="dnum">Day 09</span>
+      <span class="dtitle">Backpropagation — How Neural Nets Actually Learn</span>
+      <div class="chips"><span class="chip cvis">visual</span><span class="chip cthy">concept</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=Ilg3gGewQ5U" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Backpropagation Intuitively — Chapter 3</div><div class="vs">3Blue1Brown</div></div>
+        <span class="vd">14 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=tIeHLnjs5U8" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Backpropagation Calculus — Chapter 4</div><div class="vs">3Blue1Brown</div></div>
+        <span class="vd">10 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">Backpropagation is just the <strong>chain rule of calculus</strong> applied to a computation graph. Forward pass computes predictions and loss; backward pass computes how much each weight contributed to the error. These gradients tell us exactly how to update every weight.</p>
+      <ul class="kps">
+        <li>Forward pass: compute output and loss. Backward pass: compute all gradients via chain rule</li>
+        <li>Chain rule: dL/dw = (dL/dy) times (dy/dw) — gradients multiply along the path</li>
+        <li>Vanishing gradient: in deep sigmoid networks, gradients shrink exponentially through layers</li>
+        <li>PyTorch autograd handles all of this — loss.backward() computes all gradients automatically</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d9">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q1. Backpropagation is fundamentally based on:</p>
+          <label class="q-opt"><input type="radio" name="d9q1" value="0"> Matrix factorisation</label>
+          <label class="q-opt"><input type="radio" name="d9q1" value="1"> The chain rule of calculus</label>
+          <label class="q-opt"><input type="radio" name="d9q1" value="2"> Convex optimisation</label>
+          <label class="q-opt"><input type="radio" name="d9q1" value="3"> Bayesian inference</label>
+        </div>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q2. Vanishing gradients most severely affect:</p>
+          <label class="q-opt"><input type="radio" name="d9q2" value="0"> Shallow networks with ReLU</label>
+          <label class="q-opt"><input type="radio" name="d9q2" value="1"> Single-layer perceptrons</label>
+          <label class="q-opt"><input type="radio" name="d9q2" value="2"> Deep networks with sigmoid/tanh activations</label>
+          <label class="q-opt"><input type="radio" name="d9q2" value="3"> Convolutional networks only</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q3. In PyTorch, calling loss.backward() will:</p>
+          <label class="q-opt"><input type="radio" name="d9q3" value="0"> Compute gradients for all parameters in the computation graph</label>
+          <label class="q-opt"><input type="radio" name="d9q3" value="1"> Update all model weights</label>
+          <label class="q-opt"><input type="radio" name="d9q3" value="2"> Run a forward pass</label>
+          <label class="q-opt"><input type="radio" name="d9q3" value="3"> Reset all gradients to zero</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d9')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d9')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d9"></div>
+      </div>
+      <button class="done-btn" id="db-d9" onclick="markDone('d9')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 10 -->
+  <div class="dc" id="d10">
+    <div class="dh" onclick="tog('d10')">
+      <span class="dnum">Day 10</span>
+      <span class="dtitle">Build a Neural Net from Scratch — Karpathy micrograd</span>
+      <div class="chips"><span class="chip ccod">code-along</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=VMj-3S1tku0" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">The Spelled-Out Intro to Backprop: Building micrograd</div><div class="vs">Andrej Karpathy — CODE ALONG (2.5 hrs)</div></div>
+        <span class="vd">2.5 hrs</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">Karpathy's masterpiece. You build a tiny autograd engine from zero Python — no libraries. By building it yourself, backpropagation will permanently click. Every line of code reveals how PyTorch works under the hood. <strong>Do not just watch — pause and type every line.</strong></p>
+      <ul class="kps">
+        <li>Every operation (+, *, tanh) stores its own backward function for the chain rule</li>
+        <li>Topological sort of the computation graph ensures gradients flow in the correct order</li>
+        <li>Run this in Google Colab — no local setup needed</li>
+        <li>After this, gradient descent and backprop will never be a black box again</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d10">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q1. Automatic differentiation (autograd) works by:</p>
+          <label class="q-opt"><input type="radio" name="d10q1" value="0"> Tracking operations in a computation graph and applying chain rule backwards</label>
+          <label class="q-opt"><input type="radio" name="d10q1" value="1"> Using symbolic math to differentiate analytically</label>
+          <label class="q-opt"><input type="radio" name="d10q1" value="2"> Numerically estimating gradients with finite differences</label>
+          <label class="q-opt"><input type="radio" name="d10q1" value="3"> Randomly sampling gradient directions</label>
+        </div>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q2. Topological sort of the computation graph ensures:</p>
+          <label class="q-opt"><input type="radio" name="d10q2" value="0"> The model trains faster</label>
+          <label class="q-opt"><input type="radio" name="d10q2" value="1"> Gradients are computed in the correct reverse order</label>
+          <label class="q-opt"><input type="radio" name="d10q2" value="2"> The graph has no cycles</label>
+          <label class="q-opt"><input type="radio" name="d10q2" value="3"> Memory is managed efficiently</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q3. micrograd operates only on scalar values, meaning each operation is:</p>
+          <label class="q-opt"><input type="radio" name="d10q3" value="0"> Unable to learn</label>
+          <label class="q-opt"><input type="radio" name="d10q3" value="1"> Equivalent to a convolutional layer</label>
+          <label class="q-opt"><input type="radio" name="d10q3" value="2"> Restricted to linear operations</label>
+          <label class="q-opt"><input type="radio" name="d10q3" value="3"> Broken down into individual scalar additions and multiplications</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d10')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d10')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d10"></div>
+      </div>
+      <button class="done-btn" id="db-d10" onclick="markDone('d10')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 11 -->
+  <div class="dc" id="d11">
+    <div class="dh" onclick="tog('d11')">
+      <span class="dnum">Day 11</span>
+      <span class="dtitle">CNNs — Convolutional Neural Networks</span>
+      <div class="chips"><span class="chip cvis">visual</span><span class="chip cthy">concept</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=KuXjwB4LzSA" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">But what is a convolution? (Visual deep-dive)</div><div class="vs">3Blue1Brown</div></div>
+        <span class="vd">23 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=pj9-rr1wDhM" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Convolutional Neural Networks — MIT 6.S191</div><div class="vs">MIT Deep Learning</div></div>
+        <span class="vd">45 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">A small <strong>filter/kernel</strong> slides over the image computing dot products, detecting features wherever they appear. Deep CNNs build a feature hierarchy: early layers detect edges, middle layers shapes, deep layers objects. Parameter sharing makes CNNs vastly more efficient than fully-connected nets on images.</p>
+      <ul class="kps">
+        <li>Parameter sharing: one 3x3 filter scans the entire image, reducing parameters enormously</li>
+        <li>Feature maps: the output of one filter applied across the image — each filter detects one feature type</li>
+        <li>MaxPooling: take the max in each region, reducing spatial size while keeping dominant activations</li>
+        <li>BatchNorm: normalise activations after each layer, stabilises training and allows higher learning rates</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d11">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q1. Parameter sharing in CNNs means:</p>
+          <label class="q-opt"><input type="radio" name="d11q1" value="0"> All layers use the same weights</label>
+          <label class="q-opt"><input type="radio" name="d11q1" value="1"> Parameters are shared between train and test sets</label>
+          <label class="q-opt"><input type="radio" name="d11q1" value="2"> The same filter kernel is applied across the entire spatial input</label>
+          <label class="q-opt"><input type="radio" name="d11q1" value="3"> Multiple models share one parameter set</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q2. MaxPooling is primarily used to:</p>
+          <label class="q-opt"><input type="radio" name="d11q2" value="0"> Reduce spatial dimensions and achieve translation invariance</label>
+          <label class="q-opt"><input type="radio" name="d11q2" value="1"> Increase feature map count</label>
+          <label class="q-opt"><input type="radio" name="d11q2" value="2"> Normalise activations</label>
+          <label class="q-opt"><input type="radio" name="d11q2" value="3"> Apply the ReLU activation</label>
+        </div>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q3. Early layers in a deep CNN tend to detect:</p>
+          <label class="q-opt"><input type="radio" name="d11q3" value="0"> High-level objects like faces and cars</label>
+          <label class="q-opt"><input type="radio" name="d11q3" value="1"> Low-level features like edges and textures</label>
+          <label class="q-opt"><input type="radio" name="d11q3" value="2"> Semantic meaning of the image</label>
+          <label class="q-opt"><input type="radio" name="d11q3" value="3"> Class probability distribution</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d11')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d11')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d11"></div>
+      </div>
+      <button class="done-btn" id="db-d11" onclick="markDone('d11')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 12 -->
+  <div class="dc" id="d12">
+    <div class="dh" onclick="tog('d12')">
+      <span class="dnum">Day 12</span>
+      <span class="dtitle">Training Deep Nets: Adam, Dropout &amp; BatchNorm</span>
+      <div class="chips"><span class="chip cthy">concept</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=TCH_1BHY58I" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Building makemore Part 3: Activations, Gradients, BatchNorm</div><div class="vs">Andrej Karpathy</div></div>
+        <span class="vd">1.5 hrs</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=vMh0zPT0tLI" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Stochastic Gradient Descent, Clearly Explained</div><div class="vs">StatQuest</div></div>
+        <span class="vd">10 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes"><strong>Adam</strong> combines momentum with adaptive per-parameter learning rates — use it as your default. Dropout randomly zeros neurons during training, forcing redundant representations. BatchNorm normalises activations within a batch, dramatically stabilising deep network training.</p>
+      <ul class="kps">
+        <li>Adam = adaptive moment estimation. Works well out-of-the-box — start here for every task</li>
+        <li>Dropout rate 0.2-0.5 during training; at test time all neurons are active</li>
+        <li>Weight initialisation matters: bad init causes vanishing/exploding activations from step one</li>
+        <li>Learning rate is the most important hyperparameter — search it on a log scale from 1e-4 to 0.1</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d12">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q1. The Adam optimiser combines:</p>
+          <label class="q-opt"><input type="radio" name="d12q1" value="0"> L1 and L2 regularisation</label>
+          <label class="q-opt"><input type="radio" name="d12q1" value="1"> Momentum and adaptive per-parameter learning rates</label>
+          <label class="q-opt"><input type="radio" name="d12q1" value="2"> Batch normalisation and dropout</label>
+          <label class="q-opt"><input type="radio" name="d12q1" value="3"> SGD and second-order gradients</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q2. During inference (test time), dropout should be:</p>
+          <label class="q-opt"><input type="radio" name="d12q2" value="0"> Applied at the same rate as training</label>
+          <label class="q-opt"><input type="radio" name="d12q2" value="1"> Doubled</label>
+          <label class="q-opt"><input type="radio" name="d12q2" value="2"> Applied only to the output layer</label>
+          <label class="q-opt"><input type="radio" name="d12q2" value="3"> Disabled — all neurons active</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q3. Poor weight initialisation can cause:</p>
+          <label class="q-opt"><input type="radio" name="d12q3" value="0"> Vanishing or exploding gradients from the very first iteration</label>
+          <label class="q-opt"><input type="radio" name="d12q3" value="1"> The model to immediately overfit</label>
+          <label class="q-opt"><input type="radio" name="d12q3" value="2"> Faster convergence</label>
+          <label class="q-opt"><input type="radio" name="d12q3" value="3"> Increased memory usage only</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d12')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d12')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d12"></div>
+      </div>
+      <button class="done-btn" id="db-d12" onclick="markDone('d12')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 13 -->
+  <div class="dc" id="d13">
+    <div class="dh" onclick="tog('d13')">
+      <span class="dnum">Day 13</span>
+      <span class="dtitle">Transfer Learning &amp; Fine-tuning</span>
+      <div class="chips"><span class="chip ccod">code</span><span class="chip cthy">concept</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=5T-iXNNiwIs" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Transfer Learning — fast.ai Practical Deep Learning Lesson 1</div><div class="vs">fast.ai / Jeremy Howard</div></div>
+        <span class="vd">1.5 hrs</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">Take a model pre-trained on millions of images (ResNet, ViT) and <strong>fine-tune</strong> its final layers on your small dataset. Early layers learn universal features that transfer to almost any vision task. This approach gives state-of-the-art results with very little data.</p>
+      <ul class="kps">
+        <li>Feature extraction: freeze all base weights, only train the new classification head</li>
+        <li>Fine-tuning: unfreeze all layers and train with a very small learning rate (1e-5 to 1e-4)</li>
+        <li>Discriminative learning rates: lower LR for early layers, higher for the new head</li>
+        <li>HuggingFace makes transfer learning one line for NLP: AutoModel.from_pretrained()</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d13">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q1. In feature extraction (transfer learning), the base model weights are:</p>
+          <label class="q-opt"><input type="radio" name="d13q1" value="0"> Frozen — only the new head is trained</label>
+          <label class="q-opt"><input type="radio" name="d13q1" value="1"> Trained from scratch</label>
+          <label class="q-opt"><input type="radio" name="d13q1" value="2"> Updated with a large learning rate</label>
+          <label class="q-opt"><input type="radio" name="d13q1" value="3"> Discarded entirely</label>
+        </div>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q2. Early layers in a pre-trained CNN detect:</p>
+          <label class="q-opt"><input type="radio" name="d13q2" value="0"> Task-specific features like dog breeds</label>
+          <label class="q-opt"><input type="radio" name="d13q2" value="1"> Abstract semantic categories</label>
+          <label class="q-opt"><input type="radio" name="d13q2" value="2"> Universal low-level features like edges and textures</label>
+          <label class="q-opt"><input type="radio" name="d13q2" value="3"> Output probabilities</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q3. When fine-tuning a pre-trained model, the learning rate should typically be:</p>
+          <label class="q-opt"><input type="radio" name="d13q3" value="0"> The same as training from scratch (0.1)</label>
+          <label class="q-opt"><input type="radio" name="d13q3" value="1"> Zero — no updates</label>
+          <label class="q-opt"><input type="radio" name="d13q3" value="2"> 0.5 or higher</label>
+          <label class="q-opt"><input type="radio" name="d13q3" value="3"> Much smaller (1e-5 to 1e-4) to preserve learned features</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d13')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d13')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d13"></div>
+      </div>
+      <button class="done-btn" id="db-d13" onclick="markDone('d13')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 14 -->
+  <div class="dc" id="d14">
+    <div class="dh" onclick="tog('d14')">
+      <span class="dnum">Day 14</span>
+      <span class="dtitle">RNNs, LSTMs &amp; Why Transformers Replaced Them</span>
+      <div class="chips"><span class="chip cvis">visual</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=LHXXI4-IEns" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Illustrated Guide to Recurrent Neural Networks</div><div class="vs">The A.I. Hacker — Michael Phi</div></div>
+        <span class="vd">9 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=8HyCNIVRbSU" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Illustrated Guide to LSTMs and GRUs</div><div class="vs">The A.I. Hacker — Michael Phi</div></div>
+        <span class="vd">12 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">RNNs process sequences by passing a hidden state from step to step — but gradients vanish over long sequences. <strong>LSTMs</strong> fix this with a cell state and gating mechanism. But RNNs must process tokens sequentially. Transformers parallelise over the full sequence at once — this was the key breakthrough that enabled scale.</p>
+      <ul class="kps">
+        <li>LSTM has three gates: forget (what to erase), input (what to add), output (what to expose)</li>
+        <li>GRU = simpler LSTM with two gates and fewer parameters — often similar performance</li>
+        <li>RNNs are sequential; Transformers are parallel — why transformers scale so much better</li>
+        <li>RNNs still used in streaming/online inference scenarios where full-sequence access is unavailable</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d14">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q1. LSTMs were designed to solve:</p>
+          <label class="q-opt"><input type="radio" name="d14q1" value="0"> Overfitting in deep networks</label>
+          <label class="q-opt"><input type="radio" name="d14q1" value="1"> Slow training compared to feedforward networks</label>
+          <label class="q-opt"><input type="radio" name="d14q1" value="2"> The vanishing gradient problem in long sequences</label>
+          <label class="q-opt"><input type="radio" name="d14q1" value="3"> Handling 2D image data</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q2. GRUs compared to LSTMs have:</p>
+          <label class="q-opt"><input type="radio" name="d14q2" value="0"> Fewer parameters due to a simpler gating mechanism</label>
+          <label class="q-opt"><input type="radio" name="d14q2" value="1"> More parameters and better performance</label>
+          <label class="q-opt"><input type="radio" name="d14q2" value="2"> No recurrent connection</label>
+          <label class="q-opt"><input type="radio" name="d14q2" value="3"> A separate cell state</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q3. The key reason Transformers replaced RNNs is:</p>
+          <label class="q-opt"><input type="radio" name="d14q3" value="0"> Transformers require less data</label>
+          <label class="q-opt"><input type="radio" name="d14q3" value="1"> Transformers have no attention mechanism</label>
+          <label class="q-opt"><input type="radio" name="d14q3" value="2"> Transformers cannot handle variable-length sequences</label>
+          <label class="q-opt"><input type="radio" name="d14q3" value="3"> Transformers process the full sequence in parallel, enabling massive scale</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d14')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d14')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d14"></div>
+      </div>
+      <button class="done-btn" id="db-d14" onclick="markDone('d14')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+</section>
+
+<!-- WEEK 3 -->
+<section class="wsec w3" id="ws3">
+  <div class="whdr">
+    <span class="wbadge">Week 3</span>
+    <div><div class="wtitle">NLP, Attention &amp; Transformers</div><div class="wdesc">From word embeddings to building GPT from scratch. This is where it all comes together.</div></div>
+  </div>
+
+  <!-- DAY 15 -->
+  <div class="dc" id="d15">
+    <div class="dh" onclick="tog('d15')">
+      <span class="dnum">Day 15</span>
+      <span class="dtitle">Word Embeddings — Word2Vec &amp; Semantic Space</span>
+      <div class="chips"><span class="chip cvis">visual</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=viZrOnJclY0" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Word Embedding and Word2Vec — StatQuest NLP Series</div><div class="vs">StatQuest</div></div>
+        <span class="vd">22 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=gQddtTdmG_8" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Word2Vec — Illustrated and Explained</div><div class="vs">Rasa</div></div>
+        <span class="vd">16 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">Words can be represented as dense vectors where <strong>semantically similar words cluster together</strong>. The famous result: King - Man + Woman = Queen. Modern LLMs use contextual embeddings — the same word gets a different vector depending on its context.</p>
+      <ul class="kps">
+        <li>One-hot = huge sparse vectors; embeddings = compact dense vectors (e.g. 300 dimensions)</li>
+        <li>Cosine similarity measures the angle between vectors — the metric for semantic closeness</li>
+        <li>CBOW: predict centre word from context. Skip-gram: predict context from centre word</li>
+        <li>BERT embeddings are contextual: "bank" gets different vectors in "river bank" vs "bank account"</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d15">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q1. Word embeddings represent words as:</p>
+          <label class="q-opt"><input type="radio" name="d15q1" value="0"> Sparse one-hot vectors</label>
+          <label class="q-opt"><input type="radio" name="d15q1" value="1"> Dense low-dimensional continuous vectors</label>
+          <label class="q-opt"><input type="radio" name="d15q1" value="2"> Binary feature vectors</label>
+          <label class="q-opt"><input type="radio" name="d15q1" value="3"> Integer frequency counts</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q2. Cosine similarity between word vectors measures:</p>
+          <label class="q-opt"><input type="radio" name="d15q2" value="0"> Euclidean distance</label>
+          <label class="q-opt"><input type="radio" name="d15q2" value="1"> Co-occurrence frequency</label>
+          <label class="q-opt"><input type="radio" name="d15q2" value="2"> Word frequency in the corpus</label>
+          <label class="q-opt"><input type="radio" name="d15q2" value="3"> The angle between vectors, i.e. semantic similarity</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q3. Contextual embeddings (like BERT) differ from Word2Vec because:</p>
+          <label class="q-opt"><input type="radio" name="d15q3" value="0"> The same word gets a different vector depending on surrounding context</label>
+          <label class="q-opt"><input type="radio" name="d15q3" value="1"> They use a larger vocabulary</label>
+          <label class="q-opt"><input type="radio" name="d15q3" value="2"> They produce one-hot vectors</label>
+          <label class="q-opt"><input type="radio" name="d15q3" value="3"> They only work for English</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d15')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d15')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d15"></div>
+      </div>
+      <button class="done-btn" id="db-d15" onclick="markDone('d15')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 16 -->
+  <div class="dc" id="d16">
+    <div class="dh" onclick="tog('d16')">
+      <span class="dnum">Day 16</span>
+      <span class="dtitle">The Attention Mechanism — The Key Innovation</span>
+      <div class="chips"><span class="chip cvis">visual</span><span class="chip cllm">LLM</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=eMlx5fFNoYc" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Attention in Transformers, Step by Step — Chapter 6</div><div class="vs">3Blue1Brown</div></div>
+        <span class="vd">27 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=PSs6nxngL6k" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Illustrated Guide to Transformers — Step by Step</div><div class="vs">The A.I. Hacker — Michael Phi</div></div>
+        <span class="vd">15 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">Attention lets each token look at every other token and decide relevance. It computes <strong>Queries (Q), Keys (K), and Values (V)</strong>: Q dot K produces relevance scores, softmax normalises them, then we take a weighted sum of V. This solves word disambiguation across long-range context.</p>
+      <ul class="kps">
+        <li>Attention(Q,K,V) = softmax(QK^T / sqrt(d_k)) times V — learn this formula</li>
+        <li>Scaling by sqrt(d_k) prevents dot products from becoming too large, causing softmax saturation</li>
+        <li>Multi-head: run attention h times in parallel with different projections, then concatenate</li>
+        <li>Causal masking in GPT: each position can only attend to itself and previous positions</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d16">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q1. We scale the dot product by sqrt(d_k) to:</p>
+          <label class="q-opt"><input type="radio" name="d16q1" value="0"> Make the output between 0 and 1</label>
+          <label class="q-opt"><input type="radio" name="d16q1" value="1"> Increase the magnitude of attention scores</label>
+          <label class="q-opt"><input type="radio" name="d16q1" value="2"> Prevent dot products from growing too large and saturating softmax</label>
+          <label class="q-opt"><input type="radio" name="d16q1" value="3"> Normalise the key vectors</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q2. Multi-head attention runs attention:</p>
+          <label class="q-opt"><input type="radio" name="d16q2" value="0"> Multiple times in parallel with different learned projections, then concatenates</label>
+          <label class="q-opt"><input type="radio" name="d16q2" value="1"> Sequentially one head at a time</label>
+          <label class="q-opt"><input type="radio" name="d16q2" value="2"> Only on specific transformer layers</label>
+          <label class="q-opt"><input type="radio" name="d16q2" value="3"> Once across multiple sequences simultaneously</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q3. Causal masking in GPT ensures:</p>
+          <label class="q-opt"><input type="radio" name="d16q3" value="0"> All tokens attend to all others equally</label>
+          <label class="q-opt"><input type="radio" name="d16q3" value="1"> The model processes inputs in reverse order</label>
+          <label class="q-opt"><input type="radio" name="d16q3" value="2"> Padding tokens are ignored</label>
+          <label class="q-opt"><input type="radio" name="d16q3" value="3"> Each token can only attend to itself and previous tokens, not future tokens</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d16')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d16')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d16"></div>
+      </div>
+      <button class="done-btn" id="db-d16" onclick="markDone('d16')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 17 -->
+  <div class="dc" id="d17">
+    <div class="dh" onclick="tog('d17')">
+      <span class="dnum">Day 17</span>
+      <span class="dtitle">Transformer Architecture — The Full Picture</span>
+      <div class="chips"><span class="chip cvis">visual</span><span class="chip cllm">LLM</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=wjZofJX0v4M" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Transformers, the Tech Behind LLMs — Chapter 5</div><div class="vs">3Blue1Brown</div></div>
+        <span class="vd">27 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">A Transformer block = Multi-Head Self-Attention + Feed-Forward Network + Residual Connections + LayerNorm. Stack 12 to 96 of these and you have GPT. The <strong>residual stream</strong> is the backbone — each block reads from it and adds its contribution back.</p>
+      <ul class="kps">
+        <li>Residual connections: output = x + F(x) — allows gradients to flow through the skip path</li>
+        <li>LayerNorm normalises each token's embedding independently (vs BatchNorm which normalises per-feature)</li>
+        <li>FFN in each block: two linear layers with GELU — acts as a key-value memory store for facts</li>
+        <li>Positional encoding: sinusoidal or learned vectors added to embeddings to encode order</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d17">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q1. Residual connections are primarily used to:</p>
+          <label class="q-opt"><input type="radio" name="d17q1" value="0"> Reduce the number of parameters</label>
+          <label class="q-opt"><input type="radio" name="d17q1" value="1"> Allow gradients to flow directly, enabling training of very deep networks</label>
+          <label class="q-opt"><input type="radio" name="d17q1" value="2"> Implement the attention mechanism</label>
+          <label class="q-opt"><input type="radio" name="d17q1" value="3"> Normalise attention scores</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q2. Positional encoding is necessary because:</p>
+          <label class="q-opt"><input type="radio" name="d17q2" value="0"> Attention is too slow without it</label>
+          <label class="q-opt"><input type="radio" name="d17q2" value="1"> It replaces the embedding layer</label>
+          <label class="q-opt"><input type="radio" name="d17q2" value="2"> It helps with longer sequences</label>
+          <label class="q-opt"><input type="radio" name="d17q2" value="3"> Attention is permutation-invariant and has no inherent notion of token order</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q3. The FFN in each transformer block:</p>
+          <label class="q-opt"><input type="radio" name="d17q3" value="0"> Acts as a per-token memory store and adds non-linearity</label>
+          <label class="q-opt"><input type="radio" name="d17q3" value="1"> Handles the attention computation</label>
+          <label class="q-opt"><input type="radio" name="d17q3" value="2"> Reduces the sequence length</label>
+          <label class="q-opt"><input type="radio" name="d17q3" value="3"> Produces final output probabilities</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d17')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d17')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d17"></div>
+      </div>
+      <button class="done-btn" id="db-d17" onclick="markDone('d17')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 18 -->
+  <div class="dc" id="d18">
+    <div class="dh" onclick="tog('d18')">
+      <span class="dnum">Day 18</span>
+      <span class="dtitle">Build GPT from Scratch — Karpathy nanoGPT</span>
+      <div class="chips"><span class="chip ccod">code-along</span><span class="chip cllm">LLM</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=kCc8FmEb1nY" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Let's Build GPT: From Scratch, In Code, Spelled Out</div><div class="vs">Andrej Karpathy — CODE ALONG (2 hrs)</div></div>
+        <span class="vd">2 hrs</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">The crown jewel of this curriculum. Karpathy builds a character-level GPT in roughly 200 lines of clean PyTorch. The <strong>Attention is All You Need</strong> paper becomes actual working code in front of your eyes. After this, transformer papers are just implementation details.</p>
+      <ul class="kps">
+        <li>Tokenisation: character-level here (65 chars), but GPT-4 uses BPE with about 100k tokens</li>
+        <li>Training objective: predict the next token given all previous tokens — cross-entropy loss</li>
+        <li>Temperature controls randomness at generation: low = conservative, high = creative/wild</li>
+        <li>Scaling = more data + bigger model + longer training, and performance improves predictably</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d18">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q1. GPT is trained with the objective of:</p>
+          <label class="q-opt"><input type="radio" name="d18q1" value="0"> Predicting randomly masked tokens like BERT</label>
+          <label class="q-opt"><input type="radio" name="d18q1" value="1"> Classifying the sentiment of input text</label>
+          <label class="q-opt"><input type="radio" name="d18q1" value="2"> Predicting the next token given all previous tokens</label>
+          <label class="q-opt"><input type="radio" name="d18q1" value="3"> Generating tokens in both forward and backward directions</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q2. Setting temperature to 0 during generation produces:</p>
+          <label class="q-opt"><input type="radio" name="d18q2" value="0"> Deterministic output — always picks the highest probability token</label>
+          <label class="q-opt"><input type="radio" name="d18q2" value="1"> Completely random output</label>
+          <label class="q-opt"><input type="radio" name="d18q2" value="2"> No output</label>
+          <label class="q-opt"><input type="radio" name="d18q2" value="3"> Equal probability over all tokens</label>
+        </div>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q3. In nanoGPT at character level, the vocabulary size is:</p>
+          <label class="q-opt"><input type="radio" name="d18q3" value="0"> 50,000 tokens from BPE</label>
+          <label class="q-opt"><input type="radio" name="d18q3" value="1"> About 65 unique characters</label>
+          <label class="q-opt"><input type="radio" name="d18q3" value="2"> 26 letters only</label>
+          <label class="q-opt"><input type="radio" name="d18q3" value="3"> One word per token</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d18')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d18')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d18"></div>
+      </div>
+      <button class="done-btn" id="db-d18" onclick="markDone('d18')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 19 -->
+  <div class="dc" id="d19">
+    <div class="dh" onclick="tog('d19')">
+      <span class="dnum">Day 19</span>
+      <span class="dtitle">Tokenisation &amp; Byte Pair Encoding (BPE)</span>
+      <div class="chips"><span class="chip cllm">LLM</span><span class="chip ccod">code</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=zduSFxRajkE" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Let's Build the GPT Tokenizer from Scratch</div><div class="vs">Andrej Karpathy</div></div>
+        <span class="vd">2.2 hrs</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes"><strong>BPE</strong> starts with individual bytes and iteratively merges the most frequent pair until a target vocabulary size is reached. A surprising number of LLM quirks — difficulty counting letters, bad arithmetic, odd spelling — trace directly back to tokenisation artefacts.</p>
+      <ul class="kps">
+        <li>Tokens are not words: "unbelievable" might be 3-4 tokens; " the" has a leading space</li>
+        <li>Same text in different languages uses very different numbers of tokens</li>
+        <li>OpenAI tiktoken and Google SentencePiece are the two main tokeniser libraries</li>
+        <li>Context window length is always measured in tokens, not words or characters</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d19">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q1. BPE works by:</p>
+          <label class="q-opt"><input type="radio" name="d19q1" value="0"> Splitting text into individual words</label>
+          <label class="q-opt"><input type="radio" name="d19q1" value="1"> Randomly grouping characters into tokens</label>
+          <label class="q-opt"><input type="radio" name="d19q1" value="2"> Using a fixed vocabulary of common English words</label>
+          <label class="q-opt"><input type="radio" name="d19q1" value="3"> Iteratively merging the most frequent byte pairs until a target vocabulary size</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q2. GPT-4 uses approximately how many tokens in its vocabulary?</p>
+          <label class="q-opt"><input type="radio" name="d19q2" value="0"> About 100,000</label>
+          <label class="q-opt"><input type="radio" name="d19q2" value="1"> About 5,000</label>
+          <label class="q-opt"><input type="radio" name="d19q2" value="2"> 26 (one per letter)</label>
+          <label class="q-opt"><input type="radio" name="d19q2" value="3"> About 1 million</label>
+        </div>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q3. LLM context window length is measured in:</p>
+          <label class="q-opt"><input type="radio" name="d19q3" value="0"> Words</label>
+          <label class="q-opt"><input type="radio" name="d19q3" value="1"> Characters</label>
+          <label class="q-opt"><input type="radio" name="d19q3" value="2"> Tokens</label>
+          <label class="q-opt"><input type="radio" name="d19q3" value="3"> Sentences</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d19')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d19')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d19"></div>
+      </div>
+      <button class="done-btn" id="db-d19" onclick="markDone('d19')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 20 -->
+  <div class="dc" id="d20">
+    <div class="dh" onclick="tog('d20')">
+      <span class="dnum">Day 20</span>
+      <span class="dtitle">BERT vs GPT — Encoders, Decoders &amp; Seq2Seq</span>
+      <div class="chips"><span class="chip cllm">LLM</span><span class="chip cthy">concept</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=xI0HHN5XKDo" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">BERT Neural Network, Clearly Explained</div><div class="vs">StatQuest</div></div>
+        <span class="vd">30 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">BERT uses <strong>bidirectional attention</strong> — it sees the full context in both directions — excellent for understanding tasks. GPT uses causal (left-to-right) attention, excellent for generation. T5 and BART combine both in an encoder-decoder for tasks like translation and summarisation.</p>
+      <ul class="kps">
+        <li>BERT pre-trains with Masked LM (predict hidden 15% tokens) + Next Sentence Prediction</li>
+        <li>GPT pre-trains with causal LM (predict next token) — simpler objective, scales much better</li>
+        <li>Encoder-decoder (T5, BART): encoder reads source, cross-attention lets decoder attend to it</li>
+        <li>BERT for classification/NER; GPT for generation; T5 for translation/summarisation</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d20">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q1. BERT uses bidirectional attention, meaning:</p>
+          <label class="q-opt"><input type="radio" name="d20q1" value="0"> Each token attends to all other tokens in both directions</label>
+          <label class="q-opt"><input type="radio" name="d20q1" value="1"> The model processes text right-to-left</label>
+          <label class="q-opt"><input type="radio" name="d20q1" value="2"> It uses two separate attention heads</label>
+          <label class="q-opt"><input type="radio" name="d20q1" value="3"> Attention is computed in two passes</label>
+        </div>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q2. BERT is pre-trained using:</p>
+          <label class="q-opt"><input type="radio" name="d20q2" value="0"> Next token prediction only</label>
+          <label class="q-opt"><input type="radio" name="d20q2" value="1"> Image-text contrastive learning</label>
+          <label class="q-opt"><input type="radio" name="d20q2" value="2"> Masked Language Modelling and Next Sentence Prediction</label>
+          <label class="q-opt"><input type="radio" name="d20q2" value="3"> Reinforcement learning from human feedback</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q3. Encoder-decoder models like T5 are best suited for:</p>
+          <label class="q-opt"><input type="radio" name="d20q3" value="0"> Simple text classification</label>
+          <label class="q-opt"><input type="radio" name="d20q3" value="1"> Named entity recognition</label>
+          <label class="q-opt"><input type="radio" name="d20q3" value="2"> Image generation</label>
+          <label class="q-opt"><input type="radio" name="d20q3" value="3"> Sequence-to-sequence tasks like translation and summarisation</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d20')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d20')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d20"></div>
+      </div>
+      <button class="done-btn" id="db-d20" onclick="markDone('d20')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 21 -->
+  <div class="dc" id="d21">
+    <div class="dh" onclick="tog('d21')">
+      <span class="dnum">Day 21</span>
+      <span class="dtitle">HuggingFace in Practice — Fine-tune in 20 Lines</span>
+      <div class="chips"><span class="chip ccod">code</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=GSt00_-0ncQ" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">HuggingFace Transformers Crash Course</div><div class="vs">Nicholas Renotte</div></div>
+        <span class="vd">40 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">Build a sentiment classifier using a pre-trained BERT model in 20 lines. The <strong>Trainer API</strong> abstracts away the training loop — it handles batching, logging, checkpointing, and evaluation automatically. HuggingFace Hub has 500k+ public models.</p>
+      <ul class="kps">
+        <li>AutoModel.from_pretrained("bert-base-uncased") downloads weights, config, and tokeniser in one line</li>
+        <li>Pipeline: raw text to tokenised tensors to model predictions to decoded labels</li>
+        <li>Trainer API: pass model + dataset + training args, call .train() — handles everything else</li>
+        <li>Never train a language model from scratch for NLP — always fine-tune a pre-trained one</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d21">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q1. HuggingFace AutoModel.from_pretrained() downloads:</p>
+          <label class="q-opt"><input type="radio" name="d21q1" value="0"> Only the model architecture</label>
+          <label class="q-opt"><input type="radio" name="d21q1" value="1"> Raw training data</label>
+          <label class="q-opt"><input type="radio" name="d21q1" value="2"> Pre-trained weights, configuration, and tokeniser</label>
+          <label class="q-opt"><input type="radio" name="d21q1" value="3"> A task-specific fine-tuned model</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q2. The HuggingFace Trainer API handles:</p>
+          <label class="q-opt"><input type="radio" name="d21q2" value="0"> The training loop, batching, logging, and checkpointing</label>
+          <label class="q-opt"><input type="radio" name="d21q2" value="1"> Data collection and labelling</label>
+          <label class="q-opt"><input type="radio" name="d21q2" value="2"> Model architecture design</label>
+          <label class="q-opt"><input type="radio" name="d21q2" value="3"> Deployment to production servers</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q3. For most NLP tasks, training from scratch is:</p>
+          <label class="q-opt"><input type="radio" name="d21q3" value="0"> The recommended approach</label>
+          <label class="q-opt"><input type="radio" name="d21q3" value="1"> Required because pre-trained models are unavailable</label>
+          <label class="q-opt"><input type="radio" name="d21q3" value="2"> Faster than fine-tuning</label>
+          <label class="q-opt"><input type="radio" name="d21q3" value="3"> Unnecessary — fine-tuning a pre-trained model almost always gives better results faster</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d21')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d21')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d21"></div>
+      </div>
+      <button class="done-btn" id="db-d21" onclick="markDone('d21')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+</section>
+
+<!-- WEEK 4 -->
+<section class="wsec w4" id="ws4">
+  <div class="whdr">
+    <span class="wbadge">Week 4</span>
+    <div><div class="wtitle">LLMs, RLHF, RAG &amp; Modern AI Systems</div><div class="wdesc">How GPT-4, Claude, and Llama actually work. Pre-training, alignment, RAG, fine-tuning, and what is coming next.</div></div>
+  </div>
+
+  <!-- DAY 22 -->
+  <div class="dc" id="d22">
+    <div class="dh" onclick="tog('d22')">
+      <span class="dnum">Day 22</span>
+      <span class="dtitle">Intro to Large Language Models — What Are They Really?</span>
+      <div class="chips"><span class="chip cllm">LLM</span><span class="chip cvis">visual</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=zjkBMFhNj_g" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Intro to Large Language Models — 1-Hour Overview</div><div class="vs">Andrej Karpathy</div></div>
+        <span class="vd">1 hr</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">Karpathy's one-hour masterclass on LLMs from first principles. An LLM is <strong>compressed internet knowledge stored in billions of floating point weights</strong>. He covers the full training pipeline: pre-training, supervised fine-tuning, and RLHF for alignment.</p>
+      <ul class="kps">
+        <li>Stage 1 pre-training: predict next token on massive internet text — creates a base model</li>
+        <li>Stage 2 SFT: fine-tune on high-quality human-written demonstrations — creates assistant model</li>
+        <li>Emergent abilities: capabilities that appear suddenly and unpredictably at large scale</li>
+        <li>LLM as document completer vs LLM as assistant — two very different mental models</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d22">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q1. During LLM pre-training, the model is trained on:</p>
+          <label class="q-opt"><input type="radio" name="d22q1" value="0"> Labelled classification examples</label>
+          <label class="q-opt"><input type="radio" name="d22q1" value="1"> Trillions of tokens of internet text with a next-token prediction objective</label>
+          <label class="q-opt"><input type="radio" name="d22q1" value="2"> Curated expert question-answer pairs</label>
+          <label class="q-opt"><input type="radio" name="d22q1" value="3"> Human preference rankings</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q2. Emergent abilities in LLMs refer to:</p>
+          <label class="q-opt"><input type="radio" name="d22q2" value="0"> Skills explicitly programmed by engineers</label>
+          <label class="q-opt"><input type="radio" name="d22q2" value="1"> Gradual linear improvement as model size grows</label>
+          <label class="q-opt"><input type="radio" name="d22q2" value="2"> Abilities added through fine-tuning</label>
+          <label class="q-opt"><input type="radio" name="d22q2" value="3"> Capabilities that appear suddenly and unpredictably at large scale</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q3. The transformation from base LLM to helpful assistant is achieved through:</p>
+          <label class="q-opt"><input type="radio" name="d22q3" value="0"> Supervised fine-tuning on high-quality instruction-following demonstrations</label>
+          <label class="q-opt"><input type="radio" name="d22q3" value="1"> Simply deploying the base model</label>
+          <label class="q-opt"><input type="radio" name="d22q3" value="2"> Adding more pre-training data</label>
+          <label class="q-opt"><input type="radio" name="d22q3" value="3"> Increasing the number of transformer layers</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d22')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d22')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d22"></div>
+      </div>
+      <button class="done-btn" id="db-d22" onclick="markDone('d22')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 23 -->
+  <div class="dc" id="d23">
+    <div class="dh" onclick="tog('d23')">
+      <span class="dnum">Day 23</span>
+      <span class="dtitle">RLHF — How ChatGPT Learned to Be Helpful</span>
+      <div class="chips"><span class="chip cllm">LLM</span><span class="chip cthy">concept</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=hhiLw5Q_UFg" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Reinforcement Learning from Human Feedback — Explained</div><div class="vs">Hugging Face</div></div>
+        <span class="vd">20 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=qPN9L9GNGpk" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">DPO — Direct Preference Optimisation Explained</div><div class="vs">Trelis Research</div></div>
+        <span class="vd">20 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes"><strong>RLHF</strong> transforms base LLMs into helpful assistants. Step 1: SFT on demonstrations. Step 2: train a Reward Model on human A/B preference rankings. Step 3: use PPO to optimise the LLM against the reward model. DPO is a newer, simpler alternative that skips the reward model entirely.</p>
+      <ul class="kps">
+        <li>Reward Model: trained on pairs of responses with human preference labels (A is better than B)</li>
+        <li>PPO: Proximal Policy Optimisation — maximise reward without drifting too far from base model</li>
+        <li>KL divergence penalty: prevents the fine-tuned model from becoming too different from the base</li>
+        <li>DPO: directly optimises on preference data — simpler, stabler, no RL loop needed</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d23">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q1. The Reward Model in RLHF is trained on:</p>
+          <label class="q-opt"><input type="radio" name="d23q1" value="0"> Raw internet text</label>
+          <label class="q-opt"><input type="radio" name="d23q1" value="1"> Pre-trained base model outputs only</label>
+          <label class="q-opt"><input type="radio" name="d23q1" value="2"> Human preference rankings of pairwise model outputs</label>
+          <label class="q-opt"><input type="radio" name="d23q1" value="3"> Question-answer pairs from Wikipedia</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q2. The KL divergence penalty in RLHF prevents:</p>
+          <label class="q-opt"><input type="radio" name="d23q2" value="0"> The fine-tuned model from drifting too far from the original base model</label>
+          <label class="q-opt"><input type="radio" name="d23q2" value="1"> The reward model from overfitting</label>
+          <label class="q-opt"><input type="radio" name="d23q2" value="2"> The model from generating long responses</label>
+          <label class="q-opt"><input type="radio" name="d23q2" value="3"> The training loss from going negative</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q3. DPO improves on RLHF by:</p>
+          <label class="q-opt"><input type="radio" name="d23q3" value="0"> Using a much larger reward model</label>
+          <label class="q-opt"><input type="radio" name="d23q3" value="1"> Requiring more human feedback data</label>
+          <label class="q-opt"><input type="radio" name="d23q3" value="2"> Adding a second RL loop</label>
+          <label class="q-opt"><input type="radio" name="d23q3" value="3"> Eliminating the separate reward model and RL loop entirely</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d23')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d23')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d23"></div>
+      </div>
+      <button class="done-btn" id="db-d23" onclick="markDone('d23')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 24 -->
+  <div class="dc" id="d24">
+    <div class="dh" onclick="tog('d24')">
+      <span class="dnum">Day 24</span>
+      <span class="dtitle">RAG — Retrieval-Augmented Generation</span>
+      <div class="chips"><span class="chip cllm">LLM</span><span class="chip ccod">code</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=T-D1OfcDW1M" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Retrieval Augmented Generation (RAG) Explained</div><div class="vs">IBM Technology</div></div>
+        <span class="vd">10 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=sVcwVQRHIc8" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Build a RAG Pipeline from Scratch with LangChain</div><div class="vs">Sam Witteveen</div></div>
+        <span class="vd">35 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">LLMs hallucinate because they rely on weights from training. RAG solves this: embed your documents, store them in a <strong>vector database</strong>, retrieve the most semantically relevant chunks at query time, and include them in the prompt. This is the dominant pattern in production AI apps today.</p>
+      <ul class="kps">
+        <li>Pipeline: chunk docs into ~500 token pieces, embed each chunk, store in vector DB (Chroma, Pinecone)</li>
+        <li>At query time: embed the question, find top-k similar chunks by cosine similarity, stuff into prompt</li>
+        <li>ANN (Approximate Nearest Neighbour) makes retrieval fast even with millions of vectors</li>
+        <li>Advanced RAG: reranking with cross-encoder, HyDE (generate hypothetical doc first), parent-child retrieval</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d24">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q1. RAG primarily addresses the problem of:</p>
+          <label class="q-opt"><input type="radio" name="d24q1" value="0"> Slow generation speed</label>
+          <label class="q-opt"><input type="radio" name="d24q1" value="1"> Hallucinations and outdated knowledge</label>
+          <label class="q-opt"><input type="radio" name="d24q1" value="2"> High training costs</label>
+          <label class="q-opt"><input type="radio" name="d24q1" value="3"> Poor multi-language support</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q2. A vector database stores:</p>
+          <label class="q-opt"><input type="radio" name="d24q2" value="0"> Raw text documents in full</label>
+          <label class="q-opt"><input type="radio" name="d24q2" value="1"> Model weights and configurations</label>
+          <label class="q-opt"><input type="radio" name="d24q2" value="2"> SQL-style tabular data</label>
+          <label class="q-opt"><input type="radio" name="d24q2" value="3"> Dense vector embeddings of document chunks</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q3. Semantic similarity at query time is measured using:</p>
+          <label class="q-opt"><input type="radio" name="d24q3" value="0"> Cosine similarity between embedding vectors</label>
+          <label class="q-opt"><input type="radio" name="d24q3" value="1"> Exact string matching</label>
+          <label class="q-opt"><input type="radio" name="d24q3" value="2"> BM25 keyword scoring only</label>
+          <label class="q-opt"><input type="radio" name="d24q3" value="3"> Cross-entropy loss</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d24')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d24')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d24"></div>
+      </div>
+      <button class="done-btn" id="db-d24" onclick="markDone('d24')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 25 -->
+  <div class="dc" id="d25">
+    <div class="dh" onclick="tog('d25')">
+      <span class="dnum">Day 25</span>
+      <span class="dtitle">Prompt Engineering &amp; In-Context Learning</span>
+      <div class="chips"><span class="chip cllm">LLM</span><span class="chip ccod">code</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=_ZvnD73m40o" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Prompt Engineering Guide — Full Lecture</div><div class="vs">DAIR.AI</div></div>
+        <span class="vd">1 hr</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes"><strong>Chain-of-Thought prompting</strong> ("think step by step") dramatically improves multi-step reasoning by forcing the model to externalise intermediate steps. Few-shot examples demonstrate exact output format. In-context learning: the model adapts to your examples with zero weight updates.</p>
+      <ul class="kps">
+        <li>Zero-shot: task description only. Few-shot: 2-5 input-output example pairs before the actual query</li>
+        <li>CoT gives large gains on math, logic, and code tasks — add "let's think step by step"</li>
+        <li>System prompt sets role; user prompt is the task; assistant prompt seeds output format</li>
+        <li>Temperature 0 for code/facts; 0.7-1.0 for creative writing; above 1 gets incoherent quickly</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d25">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q1. Chain-of-Thought prompting most improves LLM performance on:</p>
+          <label class="q-opt"><input type="radio" name="d25q1" value="0"> Simple factual retrieval</label>
+          <label class="q-opt"><input type="radio" name="d25q1" value="1"> Creative story generation</label>
+          <label class="q-opt"><input type="radio" name="d25q1" value="2"> Multi-step reasoning tasks like math and logic</label>
+          <label class="q-opt"><input type="radio" name="d25q1" value="3"> Translation between languages</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q2. Few-shot prompting means:</p>
+          <label class="q-opt"><input type="radio" name="d25q2" value="0"> Including 2-5 input-output examples in the prompt before the actual query</label>
+          <label class="q-opt"><input type="radio" name="d25q2" value="1"> Fine-tuning the model on a small dataset</label>
+          <label class="q-opt"><input type="radio" name="d25q2" value="2"> Using a smaller model for faster inference</label>
+          <label class="q-opt"><input type="radio" name="d25q2" value="3"> Providing only partial information to the model</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q3. For deterministic/factual outputs like code, set temperature to:</p>
+          <label class="q-opt"><input type="radio" name="d25q3" value="0"> 2.0 for maximum diversity</label>
+          <label class="q-opt"><input type="radio" name="d25q3" value="1"> 1.0 as default</label>
+          <label class="q-opt"><input type="radio" name="d25q3" value="2"> 0.7 for balanced output</label>
+          <label class="q-opt"><input type="radio" name="d25q3" value="3"> 0 or very close to 0</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d25')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d25')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d25"></div>
+      </div>
+      <button class="done-btn" id="db-d25" onclick="markDone('d25')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 26 -->
+  <div class="dc" id="d26">
+    <div class="dh" onclick="tog('d26')">
+      <span class="dnum">Day 26</span>
+      <span class="dtitle">Fine-tuning LLMs: LoRA, QLoRA &amp; PEFT</span>
+      <div class="chips"><span class="chip cllm">LLM</span><span class="chip ccod">code</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=Us5ZFp16PaU" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">LoRA Fine-tuning Explained</div><div class="vs">Weights and Biases</div></div>
+        <span class="vd">30 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=eC6Hd1hFvos" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Fine-tune Llama with QLoRA on One GPU</div><div class="vs">Maxime Labonne</div></div>
+        <span class="vd">25 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes"><strong>LoRA</strong> inserts tiny trainable adapter matrices alongside frozen base weights — training only 0.1% of parameters. QLoRA adds 4-bit quantisation so you can fine-tune a 7B model on a single consumer GPU. This is how the entire open-source LLM community does domain-specific fine-tuning.</p>
+      <ul class="kps">
+        <li>LoRA: add delta_W = B times A (low-rank) to each weight matrix; only train B and A</li>
+        <li>Rank r=8 or 16 is usually sufficient — higher rank means more expressiveness but more parameters</li>
+        <li>QLoRA: quantise base weights to 4-bit (NF4), apply LoRA adapters in 16-bit = 4x memory reduction</li>
+        <li>Use HuggingFace PEFT + trl SFTTrainer — 50-100 examples often enough for format fine-tuning</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d26">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q1. LoRA reduces trainable parameters by:</p>
+          <label class="q-opt"><input type="radio" name="d26q1" value="0"> Removing entire transformer layers</label>
+          <label class="q-opt"><input type="radio" name="d26q1" value="1"> Using 8-bit quantisation on all weights</label>
+          <label class="q-opt"><input type="radio" name="d26q1" value="2"> Decomposing weight updates into low-rank matrices and only training those</label>
+          <label class="q-opt"><input type="radio" name="d26q1" value="3"> Training only the embedding layer</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q2. QLoRA enables fine-tuning large LLMs on one GPU by:</p>
+          <label class="q-opt"><input type="radio" name="d26q2" value="0"> Quantising the base model to 4-bit while keeping LoRA adapters in 16-bit</label>
+          <label class="q-opt"><input type="radio" name="d26q2" value="1"> Gradient checkpointing only</label>
+          <label class="q-opt"><input type="radio" name="d26q2" value="2"> Training on CPU</label>
+          <label class="q-opt"><input type="radio" name="d26q2" value="3"> Reducing sequence length to 128 tokens</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q3. LoRA stands for:</p>
+          <label class="q-opt"><input type="radio" name="d26q3" value="0"> Large Output Regularisation Architecture</label>
+          <label class="q-opt"><input type="radio" name="d26q3" value="1"> Linear Output Reduction Algorithm</label>
+          <label class="q-opt"><input type="radio" name="d26q3" value="2"> Learned Optimisation of Recurrent Activations</label>
+          <label class="q-opt"><input type="radio" name="d26q3" value="3"> Low-Rank Adaptation</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d26')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d26')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d26"></div>
+      </div>
+      <button class="done-btn" id="db-d26" onclick="markDone('d26')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 27 -->
+  <div class="dc" id="d27">
+    <div class="dh" onclick="tog('d27')">
+      <span class="dnum">Day 27</span>
+      <span class="dtitle">LLM Internals — How LLMs Store and Recall Facts</span>
+      <div class="chips"><span class="chip cvis">visual</span><span class="chip cllm">LLM</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=9-Jl0dxWQs8" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">How Might LLMs Store Facts — Deep Learning Chapter 7</div><div class="vs">3Blue1Brown</div></div>
+        <span class="vd">23 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">The MLP layers inside each transformer block function as a <strong>key-value associative memory store</strong>. The first linear layer detects "key" patterns (is this about Paris?), the second outputs the associated "value" (the Eiffel Tower is there). Mechanistic interpretability is the emerging science of reverse-engineering these circuits.</p>
+      <ul class="kps">
+        <li>MLP first layer = pattern detectors (keys); second layer = associated stored values</li>
+        <li>Superposition: networks encode many more features than dimensions using near-orthogonal directions</li>
+        <li>Hallucinations occur when the model's internal confidence is miscalibrated for a fact</li>
+        <li>Anthropic and DeepMind are leading mechanistic interpretability research — fascinating frontier</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d27">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="1">
+          <p class="q-text">Q1. The MLP layers in transformers are thought to function as:</p>
+          <label class="q-opt"><input type="radio" name="d27q1" value="0"> Attention score calculators</label>
+          <label class="q-opt"><input type="radio" name="d27q1" value="1"> Key-value associative memory stores for factual knowledge</label>
+          <label class="q-opt"><input type="radio" name="d27q1" value="2"> Positional encoding modules</label>
+          <label class="q-opt"><input type="radio" name="d27q1" value="3"> Tokenisation filters</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q2. Superposition in neural networks refers to:</p>
+          <label class="q-opt"><input type="radio" name="d27q2" value="0"> Training multiple models simultaneously</label>
+          <label class="q-opt"><input type="radio" name="d27q2" value="1"> Layers that process inputs in parallel</label>
+          <label class="q-opt"><input type="radio" name="d27q2" value="2"> Residual connections adding layer outputs</label>
+          <label class="q-opt"><input type="radio" name="d27q2" value="3"> Networks encoding far more features than their dimension count using near-orthogonal directions</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q3. Mechanistic interpretability research aims to:</p>
+          <label class="q-opt"><input type="radio" name="d27q3" value="0"> Reverse-engineer which circuits and features individual neurons and attention heads encode</label>
+          <label class="q-opt"><input type="radio" name="d27q3" value="1"> Make models faster to train</label>
+          <label class="q-opt"><input type="radio" name="d27q3" value="2"> Reduce model parameter count</label>
+          <label class="q-opt"><input type="radio" name="d27q3" value="3"> Improve tokenisation efficiency</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d27')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d27')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d27"></div>
+      </div>
+      <button class="done-btn" id="db-d27" onclick="markDone('d27')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- DAY 28 -->
+  <div class="dc" id="d28">
+    <div class="dh" onclick="tog('d28')">
+      <span class="dnum">Day 28</span>
+      <span class="dtitle">AI Agents, Scaling Laws &amp; What Comes Next</span>
+      <div class="chips"><span class="chip cllm">LLM</span><span class="chip cthy">concept</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="db">
+      <div class="slbl">Watch</div>
+      <a class="vlink" href="https://www.youtube.com/watch?v=c3b-JASoPi0" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">AI Agents Explained — Tool Use, Planning and Memory</div><div class="vs">IBM Technology</div></div>
+        <span class="vd">12 min</span>
+      </a>
+      <a class="vlink" href="https://www.youtube.com/watch?v=kpiY_LemaTc" target="_blank">
+        <svg class="vico" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        <div class="vi"><div class="vt">Scaling Laws for Neural Language Models — Explained</div><div class="vs">Yannic Kilcher</div></div>
+        <span class="vd">38 min</span>
+      </a>
+      <div class="slbl">Notes</div>
+      <p class="notes">LLM Agents use tools (web search, code execution, APIs) in a <strong>ReAct loop</strong>: Reason about what to do, Act by calling a tool, Observe the result, repeat. The Chinchilla scaling laws showed model size and training data should scale together — this changed how every major lab trains models.</p>
+      <ul class="kps">
+        <li>ReAct = Reason + Act + Observe loop — models can self-correct over multiple steps</li>
+        <li>Tool use: function calling lets LLMs trigger APIs, web search, code interpreters, databases</li>
+        <li>Chinchilla law: for 10x more compute, increase model size by ~3x AND training tokens by ~3x</li>
+        <li>Multimodal LLMs embed image patches as tokens alongside text — same transformer architecture</li>
+      </ul>
+      <div class="slbl">Quiz</div>
+      <div class="quiz-box" id="quiz-d28">
+        <p class="quiz-intro">3 questions — test your understanding</p>
+        <div class="qz-item" data-answer="2">
+          <p class="q-text">Q1. The ReAct pattern stands for:</p>
+          <label class="q-opt"><input type="radio" name="d28q1" value="0"> Retrieve, Execute, Accumulate, Communicate, Terminate</label>
+          <label class="q-opt"><input type="radio" name="d28q1" value="1"> Reason, Embed, Attend, Create, Train</label>
+          <label class="q-opt"><input type="radio" name="d28q1" value="2"> Reason, Act, Observe — repeated iteratively</label>
+          <label class="q-opt"><input type="radio" name="d28q1" value="3"> Read, Encode, Attend, Classify, Terminate</label>
+        </div>
+        <div class="qz-item" data-answer="0">
+          <p class="q-text">Q2. The Chinchilla scaling law states that for optimal training:</p>
+          <label class="q-opt"><input type="radio" name="d28q2" value="0"> Model size and training data should scale together in roughly equal proportion</label>
+          <label class="q-opt"><input type="radio" name="d28q2" value="1"> Always maximise model size, use minimum data</label>
+          <label class="q-opt"><input type="radio" name="d28q2" value="2"> Training data is irrelevant beyond 100B tokens</label>
+          <label class="q-opt"><input type="radio" name="d28q2" value="3"> Smaller models always outperform larger ones with same compute</label>
+        </div>
+        <div class="qz-item" data-answer="3">
+          <p class="q-text">Q3. Multimodal LLMs handle images by:</p>
+          <label class="q-opt"><input type="radio" name="d28q3" value="0"> Using a completely separate neural network for vision</label>
+          <label class="q-opt"><input type="radio" name="d28q3" value="1"> Converting images to text descriptions first</label>
+          <label class="q-opt"><input type="radio" name="d28q3" value="2"> Processing pixels directly without tokenisation</label>
+          <label class="q-opt"><input type="radio" name="d28q3" value="3"> Encoding image patches as tokens fed into the same transformer alongside text</label>
+        </div>
+        <div class="quiz-row">
+          <button class="check-btn" onclick="checkQ('d28')">Check Answers</button>
+          <button class="reset-btn" onclick="resetQ('d28')">Reset</button>
+        </div>
+        <div class="qresult" id="qr-d28"></div>
+      </div>
+      <button class="done-btn" id="db-d28" onclick="markDone('d28')"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>All videos are free on YouTube &middot; StatQuest &middot; 3Blue1Brown &middot; Andrej Karpathy &middot; HuggingFace &middot; fast.ai</p>
+  <p style="margin-top:6px;color:#333348">28 days &middot; 84 quiz questions &middot; End-to-end ML to LLMs</p>
+</footer>
+</div>
+
+<script>
+function tog(id) {
+  var el = document.getElementById(id);
+  if (el) { el.classList.toggle('open'); }
+}
+
+function showWeek(n, btn) {
+  var i, secs, btns;
+  secs = document.querySelectorAll('.wsec');
+  for (i = 0; i < secs.length; i++) { secs[i].classList.remove('vis'); }
+  btns = document.querySelectorAll('.wbtn');
+  for (i = 0; i < btns.length; i++) { btns[i].classList.remove('on'); }
+  document.getElementById('ws' + n).classList.add('vis');
+  btn.classList.add('on');
+}
+
+function checkQ(dayId) {
+  var box, questions, i, j, q, ans, opts, radio, sel, correct, total, pct, res, bar, bgcol;
+  box = document.getElementById('quiz-' + dayId);
+  questions = box.querySelectorAll('.qz-item');
+  correct = 0;
+  total = questions.length;
+  for (i = 0; i < total; i++) {
+    q = questions[i];
+    ans = parseInt(q.getAttribute('data-answer'), 10);
+    opts = q.querySelectorAll('.q-opt');
+    sel = -1;
+    for (j = 0; j < opts.length; j++) {
+      radio = opts[j].querySelector('input[type=radio]');
+      if (radio) {
+        if (radio.checked) { sel = parseInt(radio.value, 10); }
+        radio.disabled = true;
+      }
+    }
+    if (sel === ans) {
+      correct++;
+      opts[ans].classList.add('correct-ans');
+    } else {
+      if (sel >= 0) { opts[sel].classList.add('wrong-sel'); }
+      opts[ans].classList.add('correct-ans');
+    }
+  }
+  res = document.getElementById('qr-' + dayId);
+  pct = Math.round((correct / total) * 100);
+  if (correct === total) { bgcol = 'var(--a3)'; } else if (correct >= Math.ceil(total / 2)) { bgcol = 'var(--a1)'; } else { bgcol = 'var(--a2)'; }
+  bar = '<div class="qscore-bar"><div class="qscore-fill" style="width:' + pct + '%;background:' + bgcol + '"></div></div>';
+  res.style.display = 'block';
+  if (correct === total) {
+    res.className = 'qresult perfect';
+    res.innerHTML = 'Perfect! ' + correct + ' / ' + total + ' correct' + bar;
+  } else if (correct >= Math.ceil(total / 2)) {
+    res.className = 'qresult good';
+    res.innerHTML = 'Good! ' + correct + ' / ' + total + ' correct. Review the highlighted answers.' + bar;
+  } else {
+    res.className = 'qresult retry';
+    res.innerHTML = correct + ' / ' + total + ' correct. Re-read the notes and try Reset.' + bar;
+  }
+}
+
+function resetQ(dayId) {
+  var box, opts, i, radio, res;
+  box = document.getElementById('quiz-' + dayId);
+  opts = box.querySelectorAll('.q-opt');
+  for (i = 0; i < opts.length; i++) {
+    opts[i].classList.remove('correct-ans', 'wrong-sel');
+    radio = opts[i].querySelector('input[type=radio]');
+    if (radio) { radio.disabled = false; radio.checked = false; }
+  }
+  res = document.getElementById('qr-' + dayId);
+  res.style.display = 'none';
+  res.innerHTML = '';
+}
+
+function markDone(id) {
+  var btn, card, key, stored;
+  btn = document.getElementById('db-' + id);
+  card = document.getElementById(id);
+  key = 'done_' + id;
+  try {
+    stored = localStorage.getItem(key);
+    if (stored) {
+      localStorage.removeItem(key);
+      btn.classList.remove('marked');
+      btn.innerHTML = '<span>&#10003;</span> Mark Complete';
+      card.classList.remove('done');
+    } else {
+      localStorage.setItem(key, '1');
+      btn.classList.add('marked');
+      btn.innerHTML = '<span>&#10003;</span> Completed!';
+      card.classList.add('done');
+    }
+  } catch (e) {}
+  updateProgress();
+}
+
+function updateProgress() {
+  var done, i;
+  done = 0;
+  for (i = 1; i <= 28; i++) {
+    try { if (localStorage.getItem('done_d' + i)) { done++; } } catch (e) {}
+  }
+  var pct = Math.round((done / 28) * 100);
+  document.getElementById('gbar').style.width = pct + '%';
+  document.getElementById('gpct').textContent = done + ' / 28';
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  var i, btn, card;
+  for (i = 1; i <= 28; i++) {
+    try {
+      if (localStorage.getItem('done_d' + i)) {
+        btn = document.getElementById('db-d' + i);
+        card = document.getElementById('d' + i);
+        if (btn) { btn.classList.add('marked'); btn.innerHTML = '<span>&#10003;</span> Completed!'; }
+        if (card) { card.classList.add('done'); }
+      }
+    } catch (e) {}
+  }
+  updateProgress();
+});
+</script>
+</body>
+</html>
